@@ -1,0 +1,38 @@
+# 1
+usertrap
+
+# 2
+0x7 => SYS_EXEC (kernel/syscall.h)
+
+# 3
+usermode $sstatus = 0x22
+    (gdb) p $sstatus & (1 << 8)
+        0 => User mode
+
+# 4
+scause 0x000000000000000d
+       0x0d = 00 13 => synchronous exception / fault
+                    => Load page fault
+sepc   0x000000008000204e => instruction where exception occured
+stval  0x0000000000000000 => faulting address
+
+# 5
+8000204e:	00002683          	lw	a3,0(zero) # 0 <_entry-0x80000000>
+    num => a3
+
+# 6
+*0x0 is umapped. Kernel starts at 0x80000000
+
+# 7
+(gdb) p p->name
+      initcode
+
+(gdb) p *p
+      {lock = {locked = 0, name = 0x800081b8 "proc", cpu = 0x0}, state = RUNNING, chan = 0x0, killed = 0, xstate = 0, pid = 1, parent = 0x0, 
+  kstack = 274877894656, sz = 4096, pagetable = 0x87f73000, trapframe = 0x87f74000, context = {ra = 2147488960, sp = 274877898352, s0 = 274877898400, 
+    s1 = 2147519824, s2 = 2147518752, s3 = 1, s4 = 274877898448, s5 = 2147544024, s6 = 3, s7 = 2147588592, s8 = 1, s9 = 2147588888, s10 = 4, s11 = 0}, 
+  ofile = {0x0 <repeats 16 times>}, cwd = 0x80016e60 <itable+24>, name = "initcode\000\000\000\000\000\000\000"}
+
+(gdb) p p->pid
+      1
+
