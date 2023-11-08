@@ -687,3 +687,16 @@ procdump(void)
     printf("\n");
   }
 }
+
+// Returns the number of processes whose state != UNUSED
+uint64
+nproc(void)
+{
+  uint64 np = 0;
+  for (struct proc *p = proc; p < &proc[NPROC]; p++) {
+    acquire(&p->lock);
+    np += (p->state != UNUSED);
+    release(&p->lock);
+  }
+  return np;
+}
